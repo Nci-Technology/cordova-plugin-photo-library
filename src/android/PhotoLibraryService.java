@@ -203,7 +203,6 @@ public class PhotoLibraryService {
       public void run(String filePath, Uri uri) {
         try {
           // Find the saved image in the library and return it as libraryItem
-          // String whereClause = MediaStore.MediaColumns.DATA + " = \"" + filePath + "\"";
           String whereClause = uri.toString();
           queryLibrary(context, whereClause, new ChunkResultRunnable() {
             @Override
@@ -228,7 +227,6 @@ public class PhotoLibraryService {
         // TODO: call queryLibrary and return libraryItem of what was saved
       }
     });
-
   }
 
   public class PictureData {
@@ -284,24 +282,23 @@ public class PhotoLibraryService {
     Cursor cursor;
     if (whereClause == "")
     {
-      cursor = context.getContentResolver().query(
-        collection,
-        columnValues.toArray(new String[columns.length()]),
-        whereClause, null, sortOrder);
+        cursor = context.getContentResolver().query(
+			collection,
+			columnValues.toArray(new String[columns.length()]),
+			whereClause, null, sortOrder);
     }
     else
     {
-      Uri uri = Uri.parse(whereClause);
-      cursor = context.getContentResolver().query(
-        uri,
-        columnValues.toArray(new String[columns.length()]),
-        null, null, null);
+        Uri uri = Uri.parse(whereClause);
+        cursor = context.getContentResolver().query(
+			uri,
+			columnValues.toArray(new String[columns.length()]),
+			null, null, null);
     }
-
 
     final ArrayList<JSONObject> buffer = new ArrayList<JSONObject>();
 
-    if (cursor.moveToFirst()) {
+    if (cursor != null && cursor.moveToFirst()) {
       do {
         JSONObject item = new JSONObject();
 
@@ -330,8 +327,9 @@ public class PhotoLibraryService {
       }
       while (cursor.moveToNext());
     }
-
-    cursor.close();
+    if(cursor != null){
+      cursor.close();
+    }
 
     return buffer;
 
@@ -425,8 +423,10 @@ public class PhotoLibraryService {
       return mimeType;
 
     }
+    if (cursor != null){
+      cursor.close();
+    }
 
-    cursor.close();
     return null;
   }
 
