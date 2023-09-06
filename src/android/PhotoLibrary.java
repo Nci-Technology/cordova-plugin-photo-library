@@ -197,7 +197,7 @@ public class PhotoLibrary extends CordovaPlugin {
           final boolean write = options.getBoolean("write");
 
           if (read && !cordova.hasPermission(READ_EXTERNAL_STORAGE)
-            || write && !cordova.hasPermission(WRITE_EXTERNAL_STORAGE)) {
+            || (write && !cordova.hasPermission(WRITE_EXTERNAL_STORAGE) && (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU))) {
             requestAuthorization(read, write);
           } else {
             callbackContext.success();
@@ -216,7 +216,7 @@ public class PhotoLibrary extends CordovaPlugin {
               final String url = args.getString(0);
               final String album = args.getString(1);
 
-              if (!cordova.hasPermission(WRITE_EXTERNAL_STORAGE)) {
+              if (!cordova.hasPermission(WRITE_EXTERNAL_STORAGE) && (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)) {
                 callbackContext.error(service.PERMISSION_ERROR);
                 return;
               }
@@ -244,7 +244,7 @@ public class PhotoLibrary extends CordovaPlugin {
               final String url = args.getString(0);
               final String album = args.getString(1);
 
-              if (!cordova.hasPermission(WRITE_EXTERNAL_STORAGE)) {
+              if (!cordova.hasPermission(WRITE_EXTERNAL_STORAGE) && (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)) {
                 callbackContext.error(service.PERMISSION_ERROR);
                 return;
               }
@@ -432,7 +432,7 @@ public class PhotoLibrary extends CordovaPlugin {
       permissions.add(READ_EXTERNAL_STORAGE);
     }
 
-    if (write) {
+    if (write && (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)) {
       permissions.add(WRITE_EXTERNAL_STORAGE);
     }
 
