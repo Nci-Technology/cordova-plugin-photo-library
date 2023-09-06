@@ -114,11 +114,10 @@ public class PhotoLibrary extends CordovaPlugin {
         cordova.getThreadPool().execute(new Runnable() {
           public void run() {
             try {
-
-              if (!cordova.hasPermission(READ_EXTERNAL_STORAGE)) {
-                callbackContext.error(service.PERMISSION_ERROR);
-                return;
-              }
+							if (((android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_EXTERNAL_STORAGE)) || ((android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_MEDIA_IMAGES))) {
+								callbackContext.error(service.PERMISSION_ERROR);
+								return;
+							}
 
               ArrayList<JSONObject> albums = service.getAlbums(getContext());
 
@@ -143,7 +142,7 @@ public class PhotoLibrary extends CordovaPlugin {
               final int thumbnailHeight = options.getInt("thumbnailHeight");
               final double quality = options.getDouble("quality");
 
-              if (!cordova.hasPermission(READ_EXTERNAL_STORAGE)) {
+              if (((android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_EXTERNAL_STORAGE)) || ((android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_MEDIA_IMAGES))) {
                 callbackContext.error(service.PERMISSION_ERROR);
                 return;
               }
@@ -167,7 +166,7 @@ public class PhotoLibrary extends CordovaPlugin {
 
               final String photoId = args.getString(0);
 
-              if (!cordova.hasPermission(READ_EXTERNAL_STORAGE)) {
+              if (((android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_EXTERNAL_STORAGE)) || ((android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_MEDIA_IMAGES))) {
                 callbackContext.error(service.PERMISSION_ERROR);
                 return;
               }
@@ -196,7 +195,14 @@ public class PhotoLibrary extends CordovaPlugin {
           final boolean read = options.getBoolean("read");
           final boolean write = options.getBoolean("write");
 
-          if (read && !cordova.hasPermission(READ_EXTERNAL_STORAGE)
+					
+					if (((android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_EXTERNAL_STORAGE)) || ((android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_MEDIA_IMAGES))) {
+						callbackContext.error(service.PERMISSION_ERROR);
+						return;
+					}
+
+          if (read && ((android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_EXTERNAL_STORAGE))
+						|| (read && (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_MEDIA_IMAGES))
             || (write && !cordova.hasPermission(WRITE_EXTERNAL_STORAGE) && (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU))) {
             requestAuthorization(read, write);
           } else {
@@ -395,6 +401,8 @@ public class PhotoLibrary extends CordovaPlugin {
 
   private static final String READ_EXTERNAL_STORAGE = android.Manifest.permission.READ_EXTERNAL_STORAGE;
   private static final String WRITE_EXTERNAL_STORAGE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+  private static final String READ_MEDIA_IMAGES = Manifest.permission.READ_MEDIA_IMAGES;
+
   private static final int REQUEST_AUTHORIZATION_REQ_CODE = 0;
 
   private PhotoLibraryService service;
@@ -429,7 +437,11 @@ public class PhotoLibrary extends CordovaPlugin {
     List<String> permissions = new ArrayList<String>();
 
     if (read) {
-      permissions.add(READ_EXTERNAL_STORAGE);
+		if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+			permissions.add(READ_EXTERNAL_STORAGE);
+		} else {
+			permissions.add(READ_MEDIA_IMAGES);
+		}
     }
 
     if (write && (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU)) {
