@@ -1,5 +1,6 @@
 package com.terikon.cordova.photolibrary;
 
+import android.os.Build;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -73,10 +74,14 @@ public class PhotoLibrary extends CordovaPlugin {
               final double chunkTimeSec = options.getDouble("chunkTimeSec");
               final boolean includeAlbumData = options.getBoolean("includeAlbumData");
 
-              if (!cordova.hasPermission(READ_EXTERNAL_STORAGE)) {
-                callbackContext.error(service.PERMISSION_ERROR);
-                return;
+              // check for external write permission only on android < 13
+			  if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                if (!cordova.hasPermission(WRITE_EXTERNAL_STORAGE)) {
+                  callbackContext.error(service.PERMISSION_ERROR);
+                  return;
+                }
               }
+
 
               PhotoLibraryGetLibraryOptions getLibraryOptions = new PhotoLibraryGetLibraryOptions(itemsInChunk, chunkTimeSec, includeAlbumData);
 
