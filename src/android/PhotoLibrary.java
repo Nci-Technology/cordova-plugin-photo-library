@@ -195,12 +195,6 @@ public class PhotoLibrary extends CordovaPlugin {
           final boolean read = options.getBoolean("read");
           final boolean write = options.getBoolean("write");
 
-					
-					if (((android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_EXTERNAL_STORAGE)) || ((android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_MEDIA_IMAGES))) {
-						callbackContext.error(service.PERMISSION_ERROR);
-						return;
-					}
-
           if (read && ((android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_EXTERNAL_STORAGE))
 						|| (read && (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) && !cordova.hasPermission(READ_MEDIA_IMAGES))
             || (write && !cordova.hasPermission(WRITE_EXTERNAL_STORAGE) && (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU))) {
