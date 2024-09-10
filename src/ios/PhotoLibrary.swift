@@ -3,9 +3,9 @@ import Photos
 import WebKit
 
 @objc(PhotoLibrary) class PhotoLibrary : CDVPlugin {
-    
+
     var interceptor: PhotoLibraryInterceptor?
-    
+
     lazy var concurrentQueue: DispatchQueue = DispatchQueue(label: "photo-library.queue.plugin", qos: DispatchQoS.utility, attributes: [.concurrent])
 
     override func pluginInitialize() {
@@ -17,12 +17,12 @@ import WebKit
         // self.service.stopCaching()
         NSLog("-- MEMORY WARNING --")
     }
-    
+
     @objc func overrideSchemeTask(_ urlSchemeTask: WKURLSchemeTask?) -> Bool {
         guard let urlSchemeTask = urlSchemeTask else {
             return false
         }
-        
+
         return interceptor?.handleSchemeTask(urlSchemeTask) ?? false
     }
 
@@ -155,7 +155,7 @@ import WebKit
             let options = command.arguments[1] as! NSDictionary
             let thumbnailWidth = options["thumbnailWidth"] as! Int
             let thumbnailHeight = options["thumbnailHeight"] as! Int
-            let quality = options["quality"] as! Float
+            let quality = (options["quality"] as! NSNumber).floatValue
 
             service.getThumbnail(photoId, thumbnailWidth: thumbnailWidth, thumbnailHeight: thumbnailHeight, quality: quality) { (imageData) in
 
