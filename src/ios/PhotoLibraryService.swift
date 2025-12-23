@@ -651,9 +651,10 @@ final class PhotoLibraryService {
             var placeholder: PHObjectPlaceholder?
 
             PHPhotoLibrary.shared().performChanges({
-                let createAssetRequest = PHAssetCreationRequest.creationRequestForAsset(fromVideoAtFileURL: videoURL)
+                let createAssetRequest = PHAssetCreationRequest.forAsset()
+                createAssetRequest.addResource(with: .video, fileURL: videoURL, options: nil)
                 
-                guard let assetPlaceholder = createAssetRequest?.placeholderForCreatedAsset else {
+                guard let assetPlaceholder = createAssetRequest.placeholderForCreatedAsset else {
                      return
                 }
                 placeholder = assetPlaceholder
